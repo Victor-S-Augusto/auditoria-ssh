@@ -14,13 +14,16 @@ ENV DEBIAN_FRONTEND=noninteractive
 RUN apt update && apt install -y \
     sudo \
     openssh-server \
+    vim \
+    nano \
+    net-tools \
     iproute2 \
+    iputils-ping \
+    curl \
+    wget \
+    auditd \
     rsyslog \
-    sshpass \
-    nmap \
-    whois \
-    netcat \
-    libpam-pwquality \
+    systemctl \
  && apt clean && rm -rf /var/lib/apt/lists/*
 
 # Cria estrutura de logs customizada
