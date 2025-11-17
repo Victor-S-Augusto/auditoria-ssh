@@ -1,5 +1,5 @@
 #!/bin/bash
-# infra/setup_professor.sh — execute dentro do container professor como root
+# infra/setup_victim.sh — execute dentro do container victim como root
 
 
 
@@ -30,14 +30,12 @@ MaxAuthTries 6
 AllowUsers professor
 EOF
 
-echo " "1
-echo "Setup professor completo. Usuário: professor / senha: 123456789"
+echo "Setup victim completo. Usuário: professor / senha: 123456789"
 
 # --- MITIGAÇÃO V#1: REMOÇÃO DE CREDENCIAIS EXPOSTAS ---
 echo "--- 1. Removendo Credenciais Expostas ---"
 rm -f /home/professor/anotacoes.txt || true
 echo "Arquivo com credenciais removido."
-echo ""
 
 # --- MITIGAÇÃO V#2: HARDENING SSH ---
 echo "--- 2. Protegendo a configuração SSH ---"
@@ -47,13 +45,11 @@ grep -q '^PermitRootLogin no' /etc/ssh/sshd_config || echo "PermitRootLogin no" 
 grep -q '^PubkeyAuthentication yes' /etc/ssh/sshd_config || echo "PubkeyAuthentication yes" >> /etc/ssh/sshd_config
 grep -q '^MaxAuthTries' /etc/ssh/sshd_config || echo "MaxAuthTries 3" >> /etc/ssh/sshd_config
 echo "SSH seguro!."
-echo ""
 
 # --- MITIGAÇÃO V#3: REMOVER PRIVILÉGIOS EXCESSIVOS ---
 echo "--- 3. Removendo Privilegios Excessivos ---"
 sed -i '/professor.*NOPASSWD/d' /etc/sudoers || true
 echo "Sudo sem senha para 'professor' removido."
-echo ""
 
 
 # --- MITIGAÇÃO V#4: POLÍTICA DE SENHAS ---
@@ -72,7 +68,6 @@ EOF
 
 chage -d 0 professor
 echo "Política de senhas fortes em vigor e senha do usuário 'professor' expirada."
-echo ""
 
 # --- MITIGAÇÃO V#7: HARDENING DO SO ---
 echo "--- 5. Aplicando Hardening no Sistema Operacional ---"
@@ -88,5 +83,4 @@ else
 	echo "SKIP_NET=1: Pulando aplicação de sysctl durante o build."
 fi
 echo "Parametros de hardening aplicados no SO (quando aplicável)."
-echo ""
 echo "--- Script de Hardening completo. ---"

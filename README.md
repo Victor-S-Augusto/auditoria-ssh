@@ -23,7 +23,7 @@ Nossa simulação é baseada em uma história comum e perigosa:
 
 > Em um laboratório universitário, um professor anota suas credenciais de acesso em um arquivo de texto no próprio computador. Um aluno mal-intencionado encontra essa "nota digital", usa as credenciais para acessar o sistema remotamente via SSH e ganha controle total da máquina, acessando provas, notas e outros dados sensíveis.
 
-Este projeto recria esse ambiente com duas máquinas virtuais: o **Professor** (o computador do professor) e o **Aluno** (o computador do aluno).
+Este projeto recria esse ambiente com duas máquinas virtuais: a **Vítima** (o computador do professor) e o **Atacante** (o computador do aluno).
 
 ---
 
@@ -36,9 +36,9 @@ O ambiente é orquestrado com Docker, consistindo em dois contêineres que atuam
       |         Rede Isolada do Lab (172.18.0.0/16)     |
       |                                                 |
       | +---------------------+      +----------------+ |
-      | |        ALUNO        |      |    PROFESSOR   | |
+      | |      ATACANTE       |      |     VÍTIMA     | |
       | | (Ubuntu c/ Ferram.) |----->| (Ubuntu 22.04) | |
-      | | IP: 172.18.0.2      |      | IP: 172.18.0.3 | |
+      | | IP: 172.18.0.3      |      | IP: 172.18.0.2 | |
       | +---------------------+      +----------------+ |
       |                                                 |
       +-------------------------------------------------+
@@ -51,7 +51,7 @@ O ambiente é orquestrado com Docker, consistindo em dois contêineres que atuam
 Neste laboratório, a segurança do sistema pode ser quebrada através de 6 vulnerabilidades principais, que exploramos e corrigimos em uma ordem lógica de ataque:
 
 1.  **🔑 Chave 1: Engenharia Social (A Nota Adesiva Digital)**
-    *   **A Falha:** Credenciais (usuário e senha) deixadas em um arquivo de texto simples no computador do professor. É o ponto de partida perfeito para um invasor.
+    *   **A Falha:** Credenciais (usuário e senha) deixadas em um arquivo de texto simples no computador da vítima. É o ponto de partida perfeito para um invasor.
 
 2.  **🔑 Chave 2: A Porta da Frente Aberta (SSH com Senha)**
     *   **A Falha:** O serviço SSH aceita login com senha. Combinado com as credenciais vazadas, o acesso é imediato.
@@ -60,7 +60,7 @@ Neste laboratório, a segurança do sistema pode ser quebrada através de 6 vuln
     *   **A Falha:** O usuário comprometido pode executar qualquer comando como superusuário (`root`) sem precisar digitar a senha novamente. O invasor se torna o dono do sistema.
 
 4.  **🔑 Chave 4: Senhas Padronizadas**
-    *   **A Falha:** O uso de senhas padrão ou fracas em múltiplos sistemas facilita a exploração, permitindo que um aluno use credenciais conhecidas para obter acesso.
+    *   **A Falha:** O uso de senhas padrão ou fracas em múltiplos sistemas facilita a exploração, permitindo que um atacante use credenciais conhecidas para obter acesso.
 
 5.  **🔑 Chave 5: Política de Senhas Fraca**
     *   **A Falha:** O sistema não força os usuários a criarem senhas fortes. Isso torna ataques de força bruta muito mais fáceis e rápidos.
@@ -90,7 +90,7 @@ cd auditoria-ssh/auditoria-ssh-lab
 
 ### Etapa 2: Construa os Contêineres
 
-Este comando montará as máquinas do Aluno e do Professor.
+Este comando montará as máquinas do Atacante e da Vítima.
 
 ```bash
 docker-compose up -d --build
@@ -98,27 +98,27 @@ docker-compose up -d --build
 
 ### Etapa 3: ⚔️ ATAQUE!
 
-Acesse o terminal do aluno e execute o script de exploração.
+Acesse o terminal do atacante e execute o script de exploração.
 
 ```bash
-# 1. Entre no contêiner do aluno
-docker exec -it aluno /bin/bash
+# 1. Entre no contêiner do atacante
+docker exec -it attacker /bin/bash
 
-# 2. Execute o script de ataque (informando o IP do professor)
-./exploits-safe/exploit.sh 172.18.0.3
+# 2. Execute o script de ataque (informando o IP da vítima)
+./exploits-safe/exploit.sh 172.18.0.2
 ```
 Durante a execução você verá demonstrações das vulnerabilidades listadas acima; os scripts foram construídos para uso didático em ambiente isolado.
 
 ### Etapa 4: 🛡️ DEFESA (Hardening)!
 
-Agora, vamos fortalecer a máquina do professor.
+Agora, vamos fortalecer a máquina da vítima.
 
 ```bash
-# 1. Entre no contêiner do professor
-docker exec -it professor /bin/bash
+# 1. Entre no contêiner da vítima
+docker exec -it victim /bin/bash
 
 # 2. Execute o script de hardening com permissão de superusuário
-sudo ./infra/setup_professor_modified.sh
+sudo ./infra/setup_victim_modified.sh
 ```
 O script aplicará as correções de segurança previstas nas etapas anteriores. Leia a saída para ver o status de cada mitigação.
 
@@ -126,19 +126,19 @@ O script aplicará as correções de segurança previstas nas etapas anteriores.
 
 Vamos confirmar que nossas defesas estão funcionando.
 
-1.  **Na máquina do PROFESSOR, rode o script de validação:**
+1.  **Na máquina da VÍTIMA, rode o script de validação:**
     ```bash
     sudo ./validar_hardening.sh
     ```
     Você verá um relatório de conformidade mostrando que as correções foram aplicadas.
 
-2.  **Na máquina do ALUNO, tente atacar novamente:**
+2.  **Na máquina do ATACANTE, tente atacar novamente:**
     ```bash
-    # Se você saiu, entre novamente no aluno
-    docker exec -it aluno /bin/bash
+    # Se você saiu, entre novamente no atacante
+    docker exec -it attacker /bin/bash
     
     # Execute o mesmo script de ataque de antes
-    ./exploits-safe/exploit.sh 172.18.0.3
+    ./exploits-safe/exploit.sh 172.18.0.2
     ```
     Agora, os ataques devem falhar. A documentação do laboratório descreve os controles aplicados.
 
