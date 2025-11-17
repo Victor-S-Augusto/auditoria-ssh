@@ -1,9 +1,9 @@
 #!/bin/bash
-# infra/setup_victim.sh — Configura o container da vítima com vulnerabilidades intencionais.
+# infra/setup_professor.sh — Configura o container do professor com vulnerabilidades intencionais.
 
 set -e
 
-echo "Iniciando configuração do container da vítima com vulnerabilidades..."
+echo "Iniciando configuração do container do professor com vulnerabilidades..."
 
 # Cria um usuário "professor" com senha fraca e anota as credenciais em um arquivo de texto.
 useradd -m -s /bin/bash professor
@@ -16,8 +16,6 @@ IP da Maquina: 172.17.0.2
 EOL
 chown professor:professor /home/professor/anotacoes.txt
 echo "Vulnerabilidade 'Engenharia Social' configurada: Credenciais em /home/professor/anotacoes.txt"
-
-# Instala pacotes essenciais para o SSH e outros serviços
 
 # Garante que o diretório para o SSH esteja presente
 mkdir -p /var/run/sshd
@@ -50,4 +48,4 @@ echo "Vulnerabilidade 'Política de Senhas Fraca': Nenhuma política de senhas f
 # Nenhuma configuração de hardening de SO será aplicada. (Nenhuma ação necessária aqui)
 echo "Vulnerabilidade 'Sistema sem Hardening': Nenhuma configuração de hardening aplicada."
 
-echo "Configuração do container da vítima concluída. Usuário: professor / senha: 123456789"
+echo "Configuração do container do professor concluída. Usuário: professor / senha: 123456789"

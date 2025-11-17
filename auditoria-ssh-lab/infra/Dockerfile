@@ -37,7 +37,6 @@ RUN mkdir -p /var/run/sshd && \
 # Define o diretório de trabalho
 RUN apt-get update && apt-get install -y sshpass
 WORKDIR /root
-COPY exploits-safe/exploit.sh /tmp/exploit.sh
 
 # Adicionado para diferenciar os setups
 ARG SETUP_SCRIPT

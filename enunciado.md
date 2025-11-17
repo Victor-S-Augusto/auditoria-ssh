@@ -162,12 +162,12 @@ A apresentação prática deve ser dinâmica e demonstrar a aplicação do conhe
 ambiente controlado.
 1. Simulação de Ambiente e Hardening:
 ○ Configuração de Ambiente: Criar pelo menos duas máquinas virtuais: uma
-"vítima" (simulando o computador do professor) e uma "atacante". Ambas devem
+"professor" (simulando o computador do professor) e uma "aluno". Ambas devem
 estar obrigatoriamente em uma rede isolada.
 ○ Demonstração do Ataque: Replicar a exploração todos as vulnerabilidades
 elencadas;
 ○ Hardening do Sistema: Apresentar e demonstrar a aplicação de técnicas de
-hardening (endurecimento) na máquina "vítima", os quais sejam capazes de
+hardening (endurecimento) na máquina "professor", os quais sejam capazes de
 mitigar o risco de os ataques serem bem sucedidos.
 2. Proposta de Políticas e Conscientização:
 ○ Desenvolvimento de Políticas de Segurança: Propor um política de uso aceitável
