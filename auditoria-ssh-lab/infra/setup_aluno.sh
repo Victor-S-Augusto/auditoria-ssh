@@ -1,5 +1,5 @@
 #!/bin/bash
-# infra/setup_attacker.sh — execute no container attacker
+# infra/setup_aluno.sh — execute no container aluno
 
 set -e
 apt update

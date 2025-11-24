@@ -1,17 +1,16 @@
 #!/bin/bash
-# infra/setup_victim.sh — execute dentro do container victim como root
+# infra/hardeningh_professor.sh — execute dentro do container professor como root
 
 
 
-# cria usuário "professor" com senha fraca (simulação)
+#cria usuário "professor" com senha fraca (simulação)
 if ! id "professor" &>/dev/null; then
     useradd -m -s /bin/bash professor
 fi
 echo "professor:123456789" | chpasswd
 
 # instala ssh server
-apt update
-DEBIAN_FRONTEND=noninteractive apt install -y openssh-server
+DEBIAN_FRONTEND=noninteractive apt update & install -y openssh-server
 
 # garante diretórios
 mkdir -p /var/run/sshd
@@ -42,13 +41,9 @@ grep -q '^PubkeyAuthentication yes' /etc/ssh/sshd_config || echo "PubkeyAuthenti
 grep -q '^MaxAuthTries' /etc/ssh/sshd_config || echo "MaxAuthTries 3" >> /etc/ssh/sshd_config
 echo "SSH seguro!."
 
-# --- MITIGAÇÃO V#2: (A ser adicionada) ---
-
-# --- MITIGAÇÃO V#3: (A ser adicionada) ---
-
-# --- MITIGAÇÃO V#4: POLÍTICA DE SENHAS ---
+# --- MITIGAÇÃO V#2: POLÍTICA DE SENHAS ---
 echo "--- 2. Implementar uma política de senhas fortes ---"
-apt-get install -y libpam-pwquality || true
+apt-get install -y libpam-pwquality > /dev/null 2>&1 || true
 cat > /etc/security/pwquality.conf <<EOF
 minlen = 12
 minclass = 3
@@ -63,17 +58,17 @@ EOF
 chage -d 0 professor
 echo "Política de senhas fortes em vigor e senha do usuário 'professor' expirada."
 
-# --- MITIGAÇÃO V#5: REMOVER PRIVILÉGIOS EXCESSIVOS ---
+# --- MITIGAÇÃO V#3: REMOVER PRIVILÉGIOS EXCESSIVOS ---
 echo "--- 3. Removendo Privilegios Excessivos ---"
 sed -i '/professor.*NOPASSWD/d' /etc/sudoers || true
 echo "Sudo sem senha para 'professor' removido."
 
-# --- MITIGAÇÃO V#6: REMOÇÃO DE CREDENCIAIS EXPOSTAS ---
+# --- MITIGAÇÃO V#4: REMOÇÃO DE CREDENCIAIS EXPOSTAS ---
 echo "--- 4. Removendo Credenciais Expostas ---"
 rm -f /home/professor/anotacoes.txt || true
 echo "Arquivo com credenciais removido."
 
-# --- MITIGAÇÃO V#7: HARDENING DO SO ---
+# --- MITIGAÇÃO V#5: HARDENING DO SO ---
 echo "--- 5. Aplicando Hardening no Sistema Operacional ---"
 cat > /etc/sysctl.d/99-hardening.conf <<EOF
 net.ipv4.conf.all.rp_filter = 1
@@ -81,10 +76,9 @@ net.ipv4.tcp_syncookies = 1
 kernel.randomize_va_space = 2
 EOF
 if [ "$SKIP_NET" != "1" ]; then
-	# sysctl may be unavailable or read-only during image build; guard it
-	sysctl -p || echo "sysctl falhou (possivelmente read-only durante build); pulei." 
+	sysctl -p || echo "sysctl falhou." 
 else
-	echo "SKIP_NET=1: Pulando aplicação de sysctl durante o build."
+	echo "Pulando aplicação de sysctl durante o build."
 fi
-echo "Parametros de hardening aplicados no SO (quando aplicável)."
+echo "Parametros de hardening aplicados no SO."
 echo "--- Script de Hardening completo. ---"

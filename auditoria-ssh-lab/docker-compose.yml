@@ -1,11 +1,11 @@
 services:
-  attacker:
+  aluno:
     build:
       context: .
       dockerfile: ./infra/Dockerfile
       args:
-        SETUP_SCRIPT: setup_attacker.sh
-    container_name: attacker
+        SETUP_SCRIPT: setup_aluno.sh
+    container_name: aluno
     networks:
       - lab-network
     tty: true
@@ -13,17 +13,16 @@ services:
     volumes:
       - ./exploits-safe/exploit.sh:/root/exploit.sh:ro
 
-  victim:
+  professor:
     build:
       context: .
       dockerfile: ./infra/Dockerfile
       args:
-        SETUP_SCRIPT: setup_victim.sh
-    container_name: victim
+        SETUP_SCRIPT: setup_professor.sh
+    container_name: professor
     ports:
       - "2021:21"   # host 2021 -> container 21 (FTP)
       - "2222:22"   # host 2222 -> container 22 (SSH)
-      - "2023:23"   # host 2023 -> container 23 (Telnet)
     networks:
       - lab-network
     tty: true

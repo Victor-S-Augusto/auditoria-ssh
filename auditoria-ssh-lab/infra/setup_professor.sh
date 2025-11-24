@@ -1,5 +1,5 @@
 #!/bin/bash
-# infra/setup_victim.sh — Configura o container da vítima com vulnerabilidades intencionais.
+# infra/setup_professor.sh — Configura o container do professor com vulnerabilidades intencionais.
 
 set -e
 

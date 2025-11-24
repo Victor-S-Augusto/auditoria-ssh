@@ -4,9 +4,6 @@
 
 FROM ubuntu:22.04
 
-LABEL maintainer="sua-equipe@universidade.edu"
-LABEL description="Imagem base do laboratório de segurança - com sudo, SSH e estrutura de logs"
-
 # Evita prompts interativos
 ENV DEBIAN_FRONTEND=noninteractive
 
@@ -45,10 +42,8 @@ COPY exploits-safe/exploit.sh /tmp/exploit.sh
 # Adicionado para diferenciar os setups
 ARG SETUP_SCRIPT
 COPY infra/setup_*.sh /root/
+COPY infra/hardening_professor.sh /root/
 COPY validar_hardening.sh /root/
-# Durante o build definimos SKIP_NET=1 para evitar que o processo de build tente
-# aplicar regras de rede/kernel (iptables/sysctl) — essas operações exigem
-# privilégios/capacidades de runtime e falham dentro de um build container.
 RUN if [ -n "$SETUP_SCRIPT" ]; then bash "$SETUP_SCRIPT"; fi
 
 # Porta padrão SSH
